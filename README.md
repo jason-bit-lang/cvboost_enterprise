@@ -35,7 +35,7 @@ qui correspondent a son profil et peut simuler un entretien avec une assistante 
 │   └── nettoyage_offres.py  nettoyage Pandas des offres d'emploi
 ├── data/                analytics.db et fichiers d'offres
 ├── logs/                journal du site (non versionne)
-├── instance/            base SQLite (creee automatiquement, non versionnee)
+├── database/            base SQLite (creee automatiquement, non versionnee)
 ├── uploads/             CV televerses (non versionnes)
 ├── .env.example         modele du fichier .env
 ├── requirements.txt
