@@ -471,6 +471,10 @@ Retour des tests de l'apprenant (30/10), CORRIGE le jour meme :
    scikit-learn 1.9.1 ; README : "Python 3.11 a 3.15" (3.10 n'est plus suivi depuis 10/2026) et astuce PowerShell
    (Set-ExecutionPolicy). Verifie avant : nettoyage identique au fichier du depot, memes offres et scores sur 190 CV
    (ordis/comparer.py), suites partie 6 inchangees (site 119/122, Postgres 118/122, donnees 71/71, correctifs 69/69).
+   EN LIGNE (commit 225c218, Deploy Hook, 31/10 18 h 52 UTC). Re-test apres correction : conteneurs Python 3.11 a 3.15
+   14/14 (3.10 refuse par pip : "Requires-Python >=3.11") ; GitHub Actions 6/6 (Windows 3.11 et 3.15, Windows en cmd
+   avec venv\Scripts\activate, Mac M1 3.15, Mac Intel 3.13, Ubuntu 3.14 : installation 23 a 60 s, demarrage 3,5 s) ;
+   navigateur_correctifs.js enligne 14/14. Branche test-ordinateurs encore sur GitHub (a supprimer par l'apprenant).
 
 ## Architecture du projet (imposee par la formation, mise en place le 29/10)
 
