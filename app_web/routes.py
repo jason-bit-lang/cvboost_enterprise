@@ -279,6 +279,10 @@ def erreur_serveur(erreur):
 @app.errorhandler(413)
 def file_too_large(error):
     """Erreur 413 : Flask refuse tout envoi de plus de MAX_CONTENT_LENGTH (5 Mo) avant meme de le lire."""
+    # Ailleurs que sur l'envoi du CV (assistante, pitch, favori), ce n'est pas un CV : simple message en JSON
+    # pour le script de la page, sans retour vers /upload ni fausse ligne UPLOAD_REJECTED dans le journal
+    if request.path != url_for('upload'):
+        return jsonify(erreur='Demande trop volumineuse : 5 Mo maximum.'), 413
     # Son nom est donc inconnu : seule la taille est notee dans le journal
     return reject_upload('too_large', 'Fichier trop volumineux : 5 Mo maximum.')
 
