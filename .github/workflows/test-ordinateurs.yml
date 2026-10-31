@@ -1,0 +1,73 @@
+# TEST TEMPORAIRE (branche test-ordinateurs, a supprimer apres le test) : apres la mise a jour des bibliotheques,
+# CVBoost se lance-t-il sur de vrais ordinateurs Windows, Mac et Linux en suivant le README ?
+name: Test sur plusieurs ordinateurs (apres correction)
+
+on:
+  push:
+    branches: [test-ordinateurs]
+
+jobs:
+  lancer:
+    name: ${{ matrix.nom }} - Python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { nom: 'Windows', os: windows-latest, python: '3.11' }
+          - { nom: 'Windows', os: windows-latest, python: '3.15' }
+          - { nom: 'Mac Apple M1', os: macos-latest, python: '3.15' }
+          - { nom: 'Mac Intel', os: macos-15-intel, python: '3.13' }
+          - { nom: 'Ubuntu Linux', os: ubuntu-latest, python: '3.14' }
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+          allow-prereleases: true
+
+      - name: Installer comme dans le README (venv + pip install -r requirements.txt)
+        shell: bash
+        run: |
+          python --version
+          python -m venv venv
+          if [ -f venv/Scripts/activate ]; then . venv/Scripts/activate; else . venv/bin/activate; fi
+          debut=$(date +%s)
+          pip install --disable-pip-version-check -r requirements.txt
+          echo "INSTALLATION REUSSIE en $(( $(date +%s) - debut )) s"
+
+      - name: Lancer python run.py et l'API, puis parcours d'un nouvel utilisateur
+        shell: bash
+        run: |
+          if [ -f venv/Scripts/activate ]; then . venv/Scripts/activate; else . venv/bin/activate; fi
+          python run.py > site.log 2>&1 &
+          uvicorn api_service.main:app --port 8000 > api.log 2>&1 &
+          python .github/test-ordinateurs/parcours.py
+
+      - name: Journaux du site et de l'API
+        if: always()
+        shell: bash
+        run: |
+          echo '--- site.log'; cat site.log 2>/dev/null | tail -40
+          echo '--- api.log'; cat api.log 2>/dev/null | tail -20
+
+  # Le README pour Windows a la lettre, dans l'invite de commandes (cmd) : venv\Scripts\activate
+  windows-cmd:
+    name: Windows - invite de commandes (cmd) - Python 3.15
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.15'
+      - name: Installer et lancer avec les commandes Windows du README
+        shell: cmd
+        run: |
+          python -m venv venv
+          call venv\Scripts\activate
+          pip install --disable-pip-version-check -r requirements.txt || exit /b 1
+          start /b python run.py > site.log 2>&1
+          start /b uvicorn api_service.main:app --port 8000 > api.log 2>&1
+          python .github\test-ordinateurs\parcours.py
