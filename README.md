@@ -111,12 +111,18 @@ docker compose up --build      # puis ouvrir http://localhost:5000 ; arret : doc
 
 ### 3 bis. Ou lancer sans Docker
 
+Il faut Python 3.11 a 3.15 (verifier avec `python --version`).
+
 ```bash
 python -m venv venv
 # Windows : venv\Scripts\activate    Linux/Mac : source venv/bin/activate
 pip install -r requirements.txt
 python run.py
 ```
+
+Windows : si PowerShell refuse `venv\Scripts\activate` ("l'execution de scripts est desactivee"), taper les
+commandes dans l'invite de commandes (cmd), ou autoriser une fois les scripts locaux dans PowerShell :
+`Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`.
 
 L'application est ensuite disponible sur http://127.0.0.1:5000.
 Pour le pitch vocal, lancer aussi l'API dans un second terminal (meme dossier, meme venv) :

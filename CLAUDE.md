@@ -461,6 +461,16 @@ Retour des tests de l'apprenant (30/10), CORRIGE le jour meme :
    2716ecb publie par le Deploy Hook) : telephone.js 168/172, les 4 echecs = attente trop courte du test (la descente vers
    la recruteuse prend 1,3 s quand l'annonce est depliee ; verifie avec mobile/lancer2.js : elle s'arrete au bon endroit).
    Comptes de test crees en ligne le 30/10 : test.render.p6.mobile.*, test.render.p6.entretien.* (a supprimer sur demande).
+6. Lancement en local sur plusieurs ordinateurs (demande de l'apprenant, 31/10) : README suivi a la lettre (clone, venv,
+   pip install, python run.py + uvicorn, sans .env) puis parcours de 14 etapes (scratchpad ordis/ : dans_ordi.sh,
+   parcours.py, lancer.sh pour 6 conteneurs Python 3.10 a 3.15 ; vrais Windows / Mac M1 / Mac Intel / Ubuntu par
+   GitHub Actions sur la branche jetable test-ordinateurs, accord de l'apprenant ; la session ne peut pas supprimer
+   une branche : l'apprenant la supprime sur GitHub). PROBLEME : sur Python 3.14 et 3.15 (version de python.org
+   aujourd'hui), pip install echouait (psycopg2-binary 2.9.10, pandas 2.2.3, Pillow 11.0.0, scikit-learn 1.6.1 sans
+   roue pour ces Python). CORRIGE (accord de l'apprenant) : psycopg2-binary 2.9.13, pandas 3.0.6, Pillow 12.3.0,
+   scikit-learn 1.9.1 ; README : "Python 3.11 a 3.15" (3.10 n'est plus suivi depuis 10/2026) et astuce PowerShell
+   (Set-ExecutionPolicy). Verifie avant : nettoyage identique au fichier du depot, memes offres et scores sur 190 CV
+   (ordis/comparer.py), suites partie 6 inchangees (site 119/122, Postgres 118/122, donnees 71/71, correctifs 69/69).
 
 ## Architecture du projet (imposee par la formation, mise en place le 29/10)
 
