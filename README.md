@@ -76,7 +76,7 @@ cvboost_enterprise/
 
 ### 1. Recuperer le projet
 
-Le projet est sur la branche `main`, celle que Render publie. La branche `ancienne-main` garde la version
+Le projet est sur la branche `main`, celle que Render publie. La branche `ancienne_main` garde la version
 du 27/10 (avant le design et le pitch) : ne pas l'utiliser.
 
 ```bash
