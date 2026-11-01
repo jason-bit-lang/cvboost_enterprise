@@ -172,3 +172,7 @@ Reponse modele a "Presentez-vous", faite a partir du CV (50 a 60 mots), ecrite p
 par la voix Denise d'edge-tts (environ 4 s au total). Qualite des voix :
 `python -m api_service.metriques_audio` compare sage (OpenAI), Denise (edge-tts) et VITS (Coqui TTS,
 si installe) : WER et CER mesures automatiquement, MOS note a l'ecoute.
+
+## Lien du site
+
+Lien du site : https://cvboost-kfyi.onrender.com
