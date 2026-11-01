@@ -13,7 +13,7 @@ from .models import Offre
 
 LIENS_AUTORISES = ('http://', 'https://', 'mailto:')  # bloque les liens "javascript:" piegés
 # Colonnes copiees du fichier vers la table Offre (l'url sert de cle, elle est traitee a part)
-CHAMPS = ['titre', 'entreprise', 'lieu', 'description', 'date_publication', 'date_limite', 'lien_candidature',
+CHAMPS = ['titre', 'entreprise', 'lieu', 'description', 'date_publication', 'date_limite', 'statut', 'lien_candidature',
           'competences', 'titre_ia', 'competences_ia']
 
 

@@ -98,7 +98,7 @@ h2 { font-size: clamp(1.8rem, 4vw, 2.6rem); }
   body { padding-bottom: 90px; }
 }
 /* Messages flash (succes, erreur, information) : une bulle de verre qui glisse depuis le haut */
-.flash { max-width: 560px; margin: 18px auto 0; padding: 14px 20px; border-radius: 18px; font-weight: 600; text-align: center; animation: glisse .5s ease-out; }
+.flash { max-width: 560px; width: calc(100% - 32px); margin: 18px auto 0; padding: 14px 20px; border-radius: 18px; font-weight: 600; text-align: center; animation: glisse .5s ease-out; }
 @keyframes glisse { from { opacity: 0; transform: translateY(-14px); } }
 .flash.succes { color: var(--vert); } .flash.erreur { color: var(--rouge-texte); } .flash.info { color: var(--accent); }
 .pied { max-width: 1100px; margin: 0 auto; padding: 0 16px 30px; }
@@ -464,7 +464,7 @@ h2 { font-size: clamp(1.8rem, 4vw, 2.6rem); }
 @keyframes pop { 50% { transform: scale(1.2); } }
 .info-close { margin: 16px 0 0; color: var(--doux); font-size: .92rem; }
 /* Panneau "Postuler" : s'ouvre sous les boutons ronds (candidature par email, ou sans lien) */
-.panneau-postuler { max-width: 520px; margin: 22px auto 0; padding: 20px 22px; border-radius: 22px; text-align: left; background: var(--surface-douce);
+.panneau-postuler { max-width: 520px; margin: 22px auto 0; scroll-margin-bottom: 110px; padding: 20px 22px; border-radius: 22px; text-align: left; background: var(--surface-douce);
   box-shadow: var(--ombre); animation: monte .35s ease-out; position: relative; }
 .panneau-postuler h3 { margin: 0 0 10px; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
 .fermer { position: absolute; top: 12px; right: 14px; border: none; background: none; font-size: 1.4rem; line-height: 1; color: var(--doux); cursor: pointer; }

@@ -62,6 +62,7 @@ class Offre(db.Model):
     description = db.Column(db.Text, nullable=False)
     date_publication = db.Column(db.String(10))  # AAAA-MM-JJ
     date_limite = db.Column(db.String(10))       # AAAA-MM-JJ, lue dans l'annonce (vide si non precisee)
+    statut = db.Column(db.String(20))            # statut lu sur mediacongo au scraping : en_cours, moins_de_3_jours, expiree
     lien_candidature = db.Column(db.Text)        # site de candidature, ou "mailto:adresse"
     competences = db.Column(db.Text)             # trouvees par le nettoyage Pandas
     titre_ia = db.Column(db.Text)                # trouves par le modele LoRA (traitement par lot sur Colab)

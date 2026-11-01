@@ -13,7 +13,7 @@
         <div class="pastilles">
             {% if resultat.niveau in NIVEAUX %}<span class="niveau">{{ NIVEAUX[resultat.niveau] }}</span>{% endif %}
             {% if offre.date_publication %}<span>{{ icone('calendrier') }} Publiée le {{ offre.date_publication | date_fr }}</span>{% endif %}
-            {% if offre.date_limite %}
+            {% if offre.date_limite or echeance.classe == 'close' %}
                 <span class="{{ echeance.classe }}">{{ icone('horloge') }} {{ echeance.texte }}{% if echeance.classe == 'bientot' %} · {{ echeance.etiquette | lower }}{% endif %}</span>
             {% endif %}
         </div>
@@ -84,6 +84,9 @@
                         {% else %}
                             {% for paragraphe in section.paragraphes %}<p>{{ paragraphe }}</p>{% endfor %}
                         {% endif %}
+                    {% else %}
+                        <p>Le détail de cette offre (termes de référence, conditions, documents à remplir) se trouve dans des
+                            fichiers joints : ouvrez l'annonce d'origine sur mediacongo.net pour les télécharger.</p>
                     {% endfor %}
                 </div>
                 <button type="button" class="deplier" id="deplier">Lire toute l'annonce</button><br>

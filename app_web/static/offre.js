@@ -21,7 +21,11 @@ coeur.addEventListener('click', async () => {
 const postuler = document.getElementById('postuler');
 const panneauPostuler = document.getElementById('panneau-postuler');
 if (postuler && panneauPostuler) {
-    postuler.addEventListener('click', () => { panneauPostuler.hidden = !panneauPostuler.hidden; });
+    postuler.addEventListener('click', () => {
+        panneauPostuler.hidden = !panneauPostuler.hidden;
+        // Sur telephone, le panneau s'ouvre sous l'ecran : on le fait venir a l'ecran (rien ne bouge s'il est deja visible)
+        if (!panneauPostuler.hidden) panneauPostuler.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+    });
     panneauPostuler.querySelector('.fermer').addEventListener('click', () => { panneauPostuler.hidden = true; });
 } else if (postuler) {
     postuler.addEventListener('click', () => montrerToast("Vous allez sur le site de l'employeur..."));

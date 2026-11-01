@@ -13,6 +13,7 @@ MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août
         'novembre', 'décembre']
 JOURS_BIENTOT = 7     # en dessous, la date de cloture est signalee en jaune
 JOURS_NOUVELLE = 7    # une offre publiee depuis moins de 7 jours porte le badge "Nouvelle"
+PIECES_JOINTES_MIN = 2  # a partir de 2 "Cliquez ici pour telecharger", l'annonce n'est qu'une liste de fichiers joints
 
 # Les competences sont enregistrees sans accents (comptabilite) : voici leur nom a afficher
 NOMS_COMPETENCES = {
@@ -78,21 +79,30 @@ def est_nouvelle(offre):
 
 
 def est_close(offre):
-    """Vrai si la date limite de l'offre est passee. Une offre sans date limite reste ouverte."""
+    """Vrai si mediacongo marque l'offre expiree, ou si sa date limite est passee.
+    Pourquoi les deux ? Beaucoup d'annonces n'ecrivent aucune date limite : sans le statut de mediacongo,
+    une offre expiree serait encore proposee. Une offre sans date et non expiree reste ouverte."""
     limite = en_date(offre.date_limite)
-    return limite is not None and limite < date.today()
+    return offre.statut == 'expiree' or (limite is not None and limite < date.today())
+
+
+def en_pieces_jointes(offre):
+    """Vrai si l'annonce ne contient que des liens "Cliquez ici pour telecharger..." : le vrai texte est dans des
+    fichiers joints sur mediacongo. Pourquoi ? Sans les liens, ces phrases n'apprennent rien au candidat."""
+    return offre.description.lower().count('cliquez ici') >= PIECES_JOINTES_MIN
 
 
 def echeance(offre):
     """Date de cloture d'une offre, prete a afficher : texte, classe du badge, etiquette et part du temps ecoule.
     La classe donne la couleur (ouverte : vert, bientot : jaune, close et inconnue : gris)."""
     limite = en_date(offre.date_limite)
+    if est_close(offre):
+        texte = 'Clôture le ' + date_fr(limite) if limite else 'Annonce expirée'
+        return {'texte': texte, 'classe': 'close', 'etiquette': 'Clôturée', 'part': 100}
     if limite is None:
         return {'texte': 'Date limite non précisée', 'classe': 'inconnue', 'etiquette': '', 'part': 0}
     restants = (limite - date.today()).days
     texte = 'Clôture le ' + date_fr(limite)
-    if restants < 0:
-        return {'texte': texte, 'classe': 'close', 'etiquette': 'Clôturée', 'part': 100}
     # Part du temps ecoule entre la publication et la cloture : remplit la barre sous la date
     publication = en_date(offre.date_publication) or date.today()
     total = max((limite - publication).days, 1)  # max(..., 1) evite une division par zero

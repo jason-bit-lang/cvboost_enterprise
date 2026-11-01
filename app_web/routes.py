@@ -18,7 +18,7 @@ from werkzeug.utils import secure_filename
 from .config import ADRESSE_API
 from data_pipeline.pandas_cleaning import trouver_competences
 from . import app, db
-from .affichage import decouper_description, echeance, maniere_de_postuler
+from .affichage import decouper_description, echeance, en_pieces_jointes, maniere_de_postuler
 from .ia import (DUREE_ENTRETIEN, TEXTE_MIN, IAIndisponible, analyser_candidature, confirmer_cv,
                  creer_entretien_vocal, evaluer_entretien, extraire_texte)
 from .journal import log_event
@@ -339,7 +339,8 @@ def offre(offre_id, id):
     resultat = next((r for r in rechercher(texte) if r['offre'].id == offre.id), None) if texte else None
     if resultat is None:
         resultat = comparer(offre, set(trouver_competences(texte)))
-    sections = decouper_description(offre.description)
+    # Annonce faite seulement de liens vers des fichiers joints : pas de sections, la page renvoie vers l'original
+    sections = [] if en_pieces_jointes(offre) else decouper_description(offre.description)
     # Section "Dossier de candidature" de l'annonce, montree dans le panneau "Comment postuler"
     dossier = next((section for section in sections if 'candidature' in section['titre'].lower()), None)
     favori = Favori.query.filter_by(user_id=current_user.id, offre_id=offre.id).first() is not None
