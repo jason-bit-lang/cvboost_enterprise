@@ -1,4 +1,4 @@
-# A chaque envoi sur la branche publiee par Render : construit l'image Docker (comme Render),
+# A chaque envoi sur la branche main (celle que Render publie) : construit l'image Docker (comme Render),
 # verifie que le site demarre et fonctionne, puis demande a Render de publier la nouvelle version.
 # Le lien de deploiement (Deploy Hook) est un secret GitHub : RENDER_DEPLOY_HOOK.
 name: Tests puis deploiement sur Render

@@ -74,17 +74,17 @@ cvboost_enterprise/
 
 ## Lancer le projet en local
 
-### 1. Recuperer le projet (toujours la branche de travail)
+### 1. Recuperer le projet
 
-Le projet est sur la branche `main`, celle que Render publie.
-La branche `main` contient une ancienne version (avant le design et le pitch) : ne pas l'utiliser.
+Le projet est sur la branche `main`, celle que Render publie. La branche `ancienne-main` garde la version
+du 27/10 (avant le design et le pitch) : ne pas l'utiliser.
 
 ```bash
-git clone -b main https://github.com/jason-bit-lang/cvboost_enterprise
+git clone https://github.com/jason-bit-lang/cvboost_enterprise
 cd cvboost_enterprise
 ```
 
-Copie deja clonee : `git checkout main` puis `git pull`.
+Copie clonee avant le 01/11/2026 : le plus simple est de recloner le projet (la branche `main` a change).
 
 ### 2. Le fichier .env (facultatif)
 
