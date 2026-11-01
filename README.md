@@ -23,7 +23,7 @@ un pitch vocal tire de son CV.
 ## Structure (architecture de la formation)
 
 ```
-cvboost_enterprise/
+26-01-kd-dev-ia-midi-c-mon-thu-kin-projet-capstone-final-cvb-jason-bit-lang/
 ├── .github/workflows/
 │   ├── deploy.yml           CI/CD : construit l'image Docker, test de demarrage, puis deploiement Render
 │   └── scraping.yml         scraping quotidien des offres (actif si cette branche est la branche par defaut)
@@ -76,15 +76,12 @@ cvboost_enterprise/
 
 ### 1. Recuperer le projet
 
-Le projet est sur la branche `main`, celle que Render publie. La branche `ancienne_main` garde la version
-du 27/10 (avant le design et le pitch) : ne pas l'utiliser.
+Le projet est sur la branche `main`.
 
 ```bash
-git clone https://github.com/jason-bit-lang/cvboost_enterprise
-cd cvboost_enterprise
+git clone https://github.com/kadea-academy-learners/26-01-kd-dev-ia-midi-c-mon-thu-kin-projet-capstone-final-cvb-jason-bit-lang.git
+cd 26-01-kd-dev-ia-midi-c-mon-thu-kin-projet-capstone-final-cvb-jason-bit-lang
 ```
-
-Copie clonee avant le 01/11/2026 : le plus simple est de recloner le projet (la branche `main` a change).
 
 ### 2. Le fichier .env (facultatif)
 
