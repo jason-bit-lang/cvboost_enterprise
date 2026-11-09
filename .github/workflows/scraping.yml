@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: write          # autorise le robot a enregistrer les nouvelles offres
+  actions: write           # autorise le robot a lancer le deploiement (deploy.yml) apres de nouvelles offres
 
 concurrency: scraping      # jamais deux scrapings en meme temps
 
@@ -37,8 +38,22 @@ jobs:
         run: python -m data_pipeline.pandas_cleaning
 
       - name: Enregistrer les offres dans le depot
+        id: enregistrer
         run: |
           git config user.name "cvboost-bot"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/offres_brutes.csv data/offres_propres.csv
-          git diff --cached --quiet || (git commit -m "Donnees : offres du $(date +%d/%m/%Y)" && git push)
+          if git diff --cached --quiet; then
+            echo "nouvelles=non" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "Donnees : offres du $(date +%d/%m/%Y)" && git push
+            echo "nouvelles=oui" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Un push fait avec le jeton du robot (GITHUB_TOKEN) ne declenche pas deploy.yml (regle de GitHub contre
+      # les boucles). Un lancement manuel (workflow_dispatch) est permis : le site est teste puis publie.
+      - name: Mettre le site en ligne a jour
+        if: steps.enregistrer.outputs.nouvelles == 'oui'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --ref main --repo "${{ github.repository }}"

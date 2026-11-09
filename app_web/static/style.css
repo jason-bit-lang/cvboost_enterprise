@@ -172,6 +172,7 @@ h2 { font-size: clamp(1.8rem, 4vw, 2.6rem); }
    "termine" : la bulle se remplit jusqu'en haut et devient bleue, le bouton aussi. */
 .ligne-envoi { display: flex; align-items: center; gap: 14px; margin-top: 6px; }
 .ligne-envoi .btn { margin-top: 0; white-space: nowrap; padding-inline: 18px; }
+@media (max-width: 340px) { .ligne-envoi .btn { white-space: normal; } }  /* tres petit ecran : le texte du bouton passe a la ligne */
 .btn.en-cours, .btn.termine { opacity: 1; color: #fff; border-color: transparent; }
 .btn.en-cours { background: var(--mauve); box-shadow: 0 8px 24px rgba(122,92,255,.35); }
 .btn.termine { background: var(--accent); }
@@ -443,7 +444,7 @@ h2 { font-size: clamp(1.8rem, 4vw, 2.6rem); }
 /* En-tete facon page d'artiste : titre centre, informations, trois boutons ronds */
 .tete { text-align: center; padding: 40px 24px 34px; border-radius: 32px;
   background: linear-gradient(160deg, rgba(122,92,255,.18), rgba(10,108,255,.12) 55%, rgba(242,183,5,.10)), var(--verre); }
-.tete h1 { font-size: clamp(2.2rem, 5.5vw, 3.6rem); margin: 0 0 6px; }
+.tete h1 { font-size: clamp(2.2rem, 5.5vw, 3.6rem); margin: 0 0 6px; hyphens: auto; overflow-wrap: anywhere; }  /* un mot trop long ("Coordonnateur(trice)") est coupe sur petit ecran */
 .tete .qui { color: var(--doux); font-size: 1.1rem; margin: 0 0 18px; }
 .pastilles { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 .pastilles span { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; font-size: .88rem; font-weight: 600; background: var(--surface-douce); }
@@ -476,11 +477,15 @@ h2 { font-size: clamp(1.8rem, 4vw, 2.6rem); }
 .panneau-postuler ul { margin: 0 0 12px; padding-left: 20px; }
 .panneau-postuler li { margin: 6px 0; }
 /* Corps : annonce a gauche, assistante a droite */
-.corps { display: grid; grid-template-columns: 3fr 2fr; gap: 26px; align-items: start; margin-top: 26px; }
-@media (max-width: 880px) { .corps { grid-template-columns: 1fr; } }
+/* minmax(0, ...) : une colonne peut retrecir jusqu'a la largeur de l'ecran (sinon, sur 320 px, la page deborde) */
+.corps { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 26px; align-items: start; margin-top: 26px; }
+@media (max-width: 880px) { .corps { grid-template-columns: minmax(0, 1fr); } }
 .bloc { padding: 26px; margin-bottom: 18px; }
 .bloc h2 { font-size: 1.35rem; margin: 0 0 14px; }
 /* Annonce decoupee en sections, repliee au-dela de la hauteur d'un ecran */
+/* Une adresse web ou un email tres long (jusqu'a 128 caracteres sans espace) passe a la ligne :
+   sinon il elargit la page et le telephone la dezoome */
+.annonce, .panneau-postuler { overflow-wrap: anywhere; }
 .annonce h3 { font-size: 1.05rem; margin: 22px 0 8px; }
 .annonce h3:first-child { margin-top: 0; }
 .annonce p { margin: 0 0 8px; line-height: 1.65; }
