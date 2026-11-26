@@ -12,7 +12,7 @@ un pitch vocal tire de son CV.
 | -------------------- | -------------------------------------------------- |
 | Site                 | Python / Flask, gunicorn                           |
 | Authentification     | Flask-Login, hashage Werkzeug, protection CSRF     |
-| Base de donnees      | SQLite en local, Postgres sur Render (SQLAlchemy)  |
+| Base de donnees      | SQLite en local, Postgres sur Neon (SQLAlchemy)    |
 | Frontend             | HTML5 / CSS3 / Jinja2 / JavaScript                 |
 | Matching CV / offres | TF-IDF (scikit-learn)                              |
 | Assistante DRH       | OpenAI (gpt-4o-mini, gpt-live-1)                   |
@@ -126,13 +126,32 @@ Pour le pitch vocal, lancer aussi l'API dans un second terminal (meme dossier, m
 uvicorn api_service.main:app --port 8000
 ```
 
-## Mise en ligne (Render)
+## Mise en ligne (Render et Neon)
 
-Un seul service Render (offre gratuite) construit le `Dockerfile` et lance `demarrer.sh` (API + site),
-avec une base Postgres Render. Variables a renseigner sur Render : `SECRET_KEY`, `OPENAI_API_KEY`,
-`DATABASE_URL`. A chaque envoi sur la branche publiee, GitHub Actions construit l'image, verifie que le
-site demarre, puis appelle le Deploy Hook de Render (secret GitHub `RENDER_DEPLOY_HOOK`).
-La route `/health` indique l'etat du site, de la base et de l'API.
+- **Site** : un seul service Render (offre gratuite, Francfort) construit le `Dockerfile` et lance `demarrer.sh`
+  (API du pitch + site).
+- **Base de donnees** : Postgres heberge sur **Neon** (offre gratuite, Francfort, sans date d'expiration).
+  Elle remplace depuis le 26/11/2026 la base gratuite de Render, qui expirait au bout de 30 jours.
+- **Variables a renseigner sur Render** : `SECRET_KEY`, `OPENAI_API_KEY` et `DATABASE_URL` (adresse de la base
+  Neon, connexion directe). Aucune de ces valeurs n'est ecrite dans le depot.
+- **Deploiement automatique** : a chaque envoi sur `main`, GitHub Actions (`deploy.yml`) construit l'image,
+  verifie que le site demarre, puis appelle le Deploy Hook de Render (secret GitHub `RENDER_DEPLOY_HOOK`).
+- **Nouvelles offres** : chaque jour, `scraping.yml` recupere les offres ; s'il y en a de nouvelles, il les
+  enregistre dans le depot puis lance `deploy.yml`, et le site en ligne est mis a jour tout seul.
+- **Surveillance** : la route `/health` indique l'etat du site, de la base et de l'API. UptimeRobot l'appelle
+  regulierement, ce qui garde aussi le site gratuit eveille.
+
+### Changer de base de donnees
+
+1. Creer la nouvelle base Postgres et noter son adresse (sans la mettre dans le depot).
+2. Copier les donnees de l'ancienne base vers la nouvelle (client Postgres de la meme version que la nouvelle base) :
+   ```bash
+   pg_dump "ADRESSE_ANCIENNE_BASE" --no-owner --no-privileges --file=base.sql
+   psql "ADRESSE_NOUVELLE_BASE" -v ON_ERROR_STOP=1 -f base.sql
+   ```
+3. Verifier que chaque table a le meme nombre de lignes des deux cotes, puis supprimer `base.sql`
+   (il contient les comptes et les CV).
+4. Sur Render, remplacer `DATABASE_URL` par la nouvelle adresse, enregistrer et redeployer, puis verifier `/health`.
 
 ## Donnees (sprint 2)
 
@@ -173,3 +192,5 @@ si installe) : WER et CER mesures automatiquement, MOS note a l'ecoute.
 ## Lien du site
 
 Lien du site : https://cvboost-kfyi.onrender.com
+
+Auteur : Jason Brian Nzanda, portfolio : https://jason-bit-lang.github.io
