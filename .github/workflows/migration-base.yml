@@ -1,0 +1,67 @@
+# Copie unique de la base Postgres de Render vers Neon (branche temporaire, supprimee apres la copie).
+# Les deux adresses viennent des secrets GitHub : elles n'apparaissent ni dans le code ni dans le journal.
+name: Copie de la base vers Neon
+
+on:
+  push:
+    branches: [migration-base]
+
+permissions:
+  contents: read
+
+jobs:
+  copie:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      ANCIENNE: ${{ secrets.ANCIENNE_BASE_URL }}
+      NOUVELLE: ${{ secrets.NOUVELLE_BASE_URL }}
+    steps:
+      - name: Verifier que les deux secrets existent
+        run: |
+          test -n "$ANCIENNE" || { echo "Secret ANCIENNE_BASE_URL manquant"; exit 1; }
+          test -n "$NOUVELLE" || { echo "Secret NOUVELLE_BASE_URL manquant"; exit 1; }
+          # Neon donne parfois l'adresse "pooler" (passage par un partageur de connexions) : pour une copie,
+          # il faut la connexion directe, c'est la meme adresse sans "-pooler". Elle reste masquee dans le journal.
+          directe="${NOUVELLE/-pooler/}"
+          echo "::add-mask::$directe"
+          echo "NOUVELLE_DIRECTE=$directe" >> "$GITHUB_ENV"
+
+      - name: Installer le client Postgres 18 (meme version que la base Neon)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-common > /dev/null
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y > /dev/null
+          sudo apt-get install -y -qq postgresql-client-18 > /dev/null
+          # Les outils de la version 18 passent avant ceux deja installes sur la machine
+          echo "/usr/lib/postgresql/18/bin" >> "$GITHUB_PATH"
+          /usr/lib/postgresql/18/bin/pg_dump --version
+
+      - name: Verifier les deux bases
+        run: |
+          echo "Ancienne base (Render) : $(psql "$ANCIENNE" -At -c 'show server_version')"
+          echo "Nouvelle base (Neon)   : $(psql "$NOUVELLE_DIRECTE" -At -c 'show server_version')"
+          # Securite : on ne copie jamais par-dessus une base qui contient deja des tables
+          deja=$(psql "$NOUVELLE_DIRECTE" -At -c "select count(*) from information_schema.tables where table_schema = 'public'")
+          if [ "$deja" != "0" ]; then echo "La nouvelle base contient deja $deja table(s) : copie annulee."; exit 1; fi
+
+      - name: Copier la base
+        run: |
+          pg_dump "$ANCIENNE" --no-owner --no-privileges --format=plain --file=base.sql
+          psql "$NOUVELLE_DIRECTE" -v ON_ERROR_STOP=1 -q -f base.sql > /dev/null
+          rm -f base.sql
+          echo "Copie terminee."
+
+      - name: Comparer le nombre de lignes de chaque table
+        run: |
+          tables=$(psql "$ANCIENNE" -At -c "select table_name from information_schema.tables where table_schema = 'public' and table_type = 'BASE TABLE' order by 1")
+          ecarts=0
+          printf '%-20s %10s %10s\n' "TABLE" "RENDER" "NEON"
+          for t in $tables; do
+            a=$(psql "$ANCIENNE" -At -c "select count(*) from public.\"$t\"")
+            n=$(psql "$NOUVELLE_DIRECTE" -At -c "select count(*) from public.\"$t\"")
+            printf '%-20s %10s %10s\n' "$t" "$a" "$n"
+            [ "$a" = "$n" ] || ecarts=$((ecarts + 1))
+          done
+          if [ "$ecarts" != "0" ]; then echo "$ecarts table(s) differente(s)."; exit 1; fi
+          echo "Toutes les tables sont identiques."
